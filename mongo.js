@@ -46,11 +46,3 @@ if (process.argv.length === 3) {
     console.log('Invalid arguments');
     mongoose.connection.close();
 }
-
-noteSchema.set('toJSON', {
-  transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString()
-    delete returnedObject._id
-    delete returnedObject.__v
-  }
-})

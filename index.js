@@ -18,15 +18,6 @@ const url = `mongodb+srv://fullstackopen:${password}@cluster0.vvyub.mongodb.net/
 mongoose.set('strictQuery',false)
 mongoose.connect(url)
 
-const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
-});
-
-let persons = [
-
-]
-
 app.use(express.static('dist'))
 
 const requestLogger = (request, response, next) => {
@@ -88,22 +79,23 @@ app.post('/api/persons', (request, response) => {
     });
   }
 
-  if (persons.some(person => person.name === body.name)) {
-    return response.status(400).json({
-      error: 'name must be unique'
+  Person.findOne({ name: body.name }).then(existingPerson => {
+    if (existingPerson) {
+      return response.status(400).json({
+        error: 'name must be unique'
+      });
+    }
+
+    const person = new Person({
+      name: body.name,
+      number: body.number
     });
-  }
 
-  const person = {
-    id: Math.floor(Math.random() * 1000),
-    name: body.name,
-    number: body.number
-  }
-
-  persons = persons.concat(person);
-
-  response.json(person);
-})
+    person.save().then(savedPerson => {
+      response.json(savedPerson);
+    });
+  });
+});
 
 const PORT = Number(process.env.PORT) || 3001
 app.listen(PORT, () => {
