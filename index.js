@@ -27,9 +27,23 @@ const requestLogger = (request, response, next) => {
   next()
 }
 
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+
+  next(error);
+};
+
 app.use(express.json())
 app.use(cors())
 app.use(requestLogger)
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
 
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
@@ -97,6 +111,9 @@ app.post('/api/persons', (request, response) => {
     });
   });
 });
+
+app.use(unknownEndpoint)
+app.use(errorHandler)
 
 const PORT = Number(process.env.PORT) || 3001
 app.listen(PORT, () => {
