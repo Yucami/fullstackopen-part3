@@ -14,10 +14,10 @@ mongoose.set('strictQuery',false);
 
 mongoose.connect(url);
 
-const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
-});
+// const personSchema = new mongoose.Schema({
+//   name: String,
+//   number: String,
+// });
 
 const Person = mongoose.model('Person', personSchema);
 
